@@ -1,21 +1,243 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
+<div class="container">
+  <div class="jumbotron">
+    <h1 style="text-align: center;">Generador de encuestas</h1>
+  </div>
+  <button class="btn btn-success" (click)="newEncuesta()" *ngIf="nueva == false">Nueva encuesta</button>
+  <button class="btn btn-danger" (click)="cancelEncuesta()" *ngIf="nueva == true">Cancelar</button>
 </div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+<br>
 
-<router-outlet></router-outlet>
+<div class="container" *ngFor="let encuesta of encuestas">
+  <div class="jumbotron">
+    <div class="row">
+      <h2 style="text-align: center">{{encuesta.nombre}}</h2>
+      <h4 style="text-align: center">{{encuesta.descripcion}}</h4>
+    </div>
+    <div class="row" style="text-align: center">
+      <button class="glyphicon glyphicon-chevron-down" (click)="visualizar(encuesta)"></button>
+      <button class="glyphicon glyphicon-trash incompleta" (click)="deleteEncuesta(encuesta.id)"></button>
+    </div>
+  </div>
+</div>
+
+<div class="container" *ngIf="ver">
+  <div class="jumbotron">
+    <div class="container" style="text-align: center;">
+      <h1>{{encuestaEdit.nombre}}</h1>
+      <h3>{{encuestaEdit.descripcion}}</h3>
+      <button class="glyphicon glyphicon-pencil incompleta" (click) = "editarEncuesta()"></button>
+    </div>
+    <div class="container">
+      <h3>Preguntas</h3>
+      <div class="jumbotron" style="background: coral;" *ngFor="let preguntaEdit of preguntasEdit">
+        <div class="row">
+          <h3>{{preguntaEdit.pregunta}}</h3>
+          <button class="glyphicon glyphicon-pencil incompleta"></button>
+          <label>{{preguntaEdit.tipo}}</label>
+        </div>
+        <div *ngIf = "preguntaEdit.tipo != 'Pregunta Abierta'">
+          <label>Respuestas</label>
+          <br>
+          <label>{{respuestasEdit[preguntaEdit.id].respuesta1}}</label>
+          <label>{{respuestasEdit[preguntaEdit.id].respuesta2}}</label>
+          <label>{{respuestasEdit[preguntaEdit.id].respuesta3}}</label>
+          <label>{{respuestasEdit[preguntaEdit.id].respuesta4}}</label>
+          <label>{{respuestasEdit[preguntaEdit.id].respuesta5}}</label>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+
+<!-- 
+<div class="container" *ngIf="editEncuesta">
+    <div class="jumbotron">
+      <div class="row">
+        <form [formGroup]="formEditEncuesta">
+          <h2>Editar encuesta</h2>
+          <div class="col-50">
+            <label>Nombre de encuesta:</label>
+          </div>
+          <div class="col-75">
+            <input type="text" id="name" placeholder="Nombre" formControlName="nombre">
+          </div>
+          <br>
+          <div class="col-50">
+            <label>Descripción de encuesta:</label>
+          </div>
+          <div class="col-75">
+            <input type="text" placeholder="Descripción..." formControlName="descripcion">
+          </div>
+          <div id="encuesta">
+            <h3>Preguntas</h3>
+          </div>
+          <div *ngIf = "editarPregunta">
+              <div class="col-50">
+                <label>Pregunta:</label>
+              </div>
+              <div class="col-75">
+                <input type="text" placeholder="Pregunta..." formControlName="pregunta">
+              </div>
+              <div class="col-50">
+                <label>Tipo:</label>
+              </div>
+              <div class="col-75">
+                <select id="selector" (change)="selected($event)" formControlName="select">
+                  <option *ngFor="let tipo of tipos" [value]="tipo">{{tipo}}</option>
+                </select>
+              </div>
+              <br>
+              <div *ngIf="opcionMultiple">
+      
+                <div class="col-50">
+                  <label>Escriba las respuestas:</label>
+                </div>
+                <br>
+                <div class="col-75">
+                  <input type="text" placeholder="Respuesta..." formControlName="respuesta1">
+                </div>
+                <br>
+                <div class="col-75">
+                  <input type="text" placeholder="Respuesta..." formControlName="respuesta2">
+                </div>
+                <br>
+                <div class="col-75">
+                  <input type="text" placeholder="Respuesta..." formControlName="respuesta3">
+                </div>
+                <br>
+                <div class="col-75">
+                  <input type="text" placeholder="Respuesta..." formControlName="respuesta4">
+                </div>
+                <br>
+                <div class="col-75">
+                  <input type="text" placeholder="Respuesta..." formControlName="respuesta5">
+                </div>
+      
+              </div>
+          </div>    
+        </form>
+        <br>
+        <button class="btn btn-primary" (click)="newPregunta()" *ngIf="contadorPreguntas > 0 && !editar">Nueva
+          pregunta</button>
+        <button class="btn btn-primary" (click)="updatePreguntaEdit()" *ngIf="editar">Editar</button>
+  
+      </div>
+      <br>
+      <div class="row">
+        <button class="btn btn-warning" (click)="guardarComoBorrador()">Guardar como borrador</button>
+        <button class="btn btn-success" (click)="guardar()">Guardar</button>
+      </div>
+      <div style="text-align: center">
+        <label>Preguntas restantes: {{contadorPreguntas}}</label>
+      </div>
+      <div class="col-50">
+        <label>Preguntas Realizadas:</label>
+      </div>
+      <div class="row" *ngFor="let preguntaEdit of preguntasEdit">
+        <label>Pregunta: {{preguntaEdit.pregunta}}</label>
+        <button class="glyphicon glyphicon-pencil botones" (click)="editPreguntaEncuesta(preguntaEdit)"></button>
+        <button class="glyphicon glyphicon-trash botones" (click)="deletePregunta(pregunta.id)"></button>
+      </div>
+    </div>
+  </div>
+
+ -->
+
+
+
+
+
+
+<div class="container" *ngIf="nueva || editEncuesta">
+  <div class="jumbotron">
+    <div class="row">
+      <form [formGroup]="formRespuestas">
+        <h2>Nueva encuesta</h2>
+        <div class="col-50">
+          <label>Nombre de encuesta:</label>
+        </div>
+        <div class="col-75">
+          <input type="text" id="name" placeholder="Nombre" formControlName="nombre">
+        </div>
+        <br>
+        <div class="col-50">
+          <label>Descripción de encuesta:</label>
+        </div>
+        <div class="col-75">
+          <input type="text" placeholder="Descripción..." formControlName="descripcion">
+        </div>
+        <div id="encuesta">
+          <h3>Preguntas</h3>
+        </div>
+        <div *ngIf = "editarPregunta">
+                <div class="col-50">
+                  <label>Pregunta:</label>
+                </div>
+                <div class="col-75">
+                  <input type="text" placeholder="Pregunta..." formControlName="pregunta">
+                </div>
+                <div class="col-50">
+                  <label>Tipo:</label>
+                </div>
+                <div class="col-75">
+                  <select id="selector" (change)="selected($event)" formControlName="select">
+                    <option *ngFor="let tipo of tipos" [value]="tipo">{{tipo}}</option>
+                  </select>
+                </div>
+                <br>
+                <div *ngIf="opcionMultiple">
+
+                  <div class="col-50">
+                    <label>Escriba las respuestas:</label>
+                  </div>
+                  <br>
+                  <div class="col-75">
+                    <input type="text" placeholder="Respuesta..." formControlName="respuesta1">
+                  </div>
+                  <br>
+                  <div class="col-75">
+                    <input type="text" placeholder="Respuesta..." formControlName="respuesta2">
+                  </div>
+                  <br>
+                  <div class="col-75">
+                    <input type="text" placeholder="Respuesta..." formControlName="respuesta3">
+                  </div>
+                  <br>
+                  <div class="col-75">
+                    <input type="text" placeholder="Respuesta..." formControlName="respuesta4">
+                  </div>
+                  <br>
+                  <div class="col-75">
+                    <input type="text" placeholder="Respuesta..." formControlName="respuesta5">
+                  </div>
+
+                </div>
+        </div>
+      </form>
+              <br>
+      <button class="btn btn-primary" (click)="newPregunta()" *ngIf="contadorPreguntas > 0 && !editar">Nueva
+        pregunta</button>
+      <button class="btn btn-primary" (click)="updatePregunta()" *ngIf="editar">Editar</button>
+
+    </div>
+    <br>
+    <div class="row">
+      <button class="btn btn-warning" (click)="guardarComoBorrador()">Guardar como borrador</button>
+      <button class="btn btn-success" (click)="guardar()">Guardar</button>
+    </div>
+    <div style="text-align: center">
+      <label>Preguntas restantes: {{contadorPreguntas}}</label>
+    </div>
+    <div class="col-50">
+      <label>Preguntas Realizadas:</label>
+    </div>
+    <div class="row" *ngFor="let pregunta of preguntas">
+      <label>Pregunta: {{pregunta.pregunta}}</label>
+      <button class="glyphicon glyphicon-pencil botones" (click)="editPregunta(pregunta)"></button>
+      <button class="glyphicon glyphicon-trash botones" (click)="deletePregunta(pregunta.id)"></button>
+    </div>
+  </div>
+</div>

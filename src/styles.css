@@ -1,1 +1,43 @@
 /* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+.nuevaEncuesta{
+    background: #3A25B9;
+}
+
+
+
+input[type=text], select, textarea{
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical;
+  }
+
+ 
+
+label {
+padding: 12px 12px 12px 0;
+display: inline-block;
+}
+
+.col-25 {
+    float: left;
+    width: 25%;
+    margin-top: 6px;
+}
+
+.incompleta{
+    background: transparent;
+    border: 0px;
+    color: black;
+    text-align: center;
+}
+
+.botones{
+    position: absolute;
+    margin-right: 2px;
+    background: transparent;
+}
